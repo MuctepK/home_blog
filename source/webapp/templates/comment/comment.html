@@ -1,5 +1,13 @@
-<h2>{{ comment.text }}</h2>
-        <div>{{ comment.author }}<br>
-        <div>{{ comment.created_ad }}{{ comment.updated_at }}</div>
-        <p><a href="{% url 'comment_update' comment.pk %}">Edit</a></p>
-        <p><a href="{% url 'comment_delete' comment.pk %}">Delete</a></p>
+<div class="row my-5">
+                <div class="left col-8 d-flex justify-content-center">
+                    <h5>{{ comment.text }}</h5>
+                </div>
+                <div class="right col-4 d-flex justify-content-end">
+                    <p class="mr-5"><a href="{% url 'comment_update' comment.pk %}"><i class="far fa-edit"></i></a></p>
+                    <p class="mr-3"><a href="{% url 'comment_delete' comment.pk %}"><i class="far fa-trash-alt"></i></a></p>
+                </div>
+            </div>
+            <div>
+                <p>Author: {{ comment.author }}</p>
+                <p>Created date: {{ comment.created_at|date:"Y-m-d H:i:s" }}</p>
+                <p>Updated date: {{ comment.updated_at|date:"Y-m-d H:i:s" }}</p></div>

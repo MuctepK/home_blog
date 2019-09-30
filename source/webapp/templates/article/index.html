@@ -9,11 +9,17 @@
     <h1>Articles:</h1>
     <hr/>
     {% for article in articles %}
-        <h2>{{ article.title }}</h2>
+        <div class="row my-5">
+                <div class="left col-8 d-flex justify-content-center">
+                    <h5><a href="{% url 'article_view' article.pk %}">{{ article.title }}</a></h5>
+                </div>
+                <div class="right col-4 d-flex justify-content-end">
+                    <p class="mr-5"><a href="{% url 'article_update' article.pk %}"><i class="far fa-edit"></i></a></p>
+                    <p class="mr-3"><a href="{% url 'article_delete' article.pk %}"><i class="far fa-trash-alt"></i></a></p>
+                </div>
+            </div>
         <div>{{ article.text }}</div>
-        <p><a href="{% url 'article_view' article.pk %}">More...</a></p>
-        <p><a href="{% url 'article_update' article.pk %}">Edit</a></p>
-        <p><a href="{% url 'article_delete' article.pk %}">Delete</a></p>
+
         <hr/>
     {% endfor %}
 {% endblock %}
