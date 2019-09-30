@@ -20,6 +20,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Comment(models.Model):
     article = models.ForeignKey('webapp.Article', related_name='comments',
                                 on_delete=models.CASCADE, verbose_name='Статья')
