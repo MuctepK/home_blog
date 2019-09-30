@@ -5,11 +5,15 @@
 {% endfor %}
 
 {% for field in form %}
+    {% if field.name == 'article' and field.value != empty_label %}
+
+    {% else %}
     <p><label for="{{ field.id_for_label }}">{{ field.label }}</label></p>
     <p>{{ field }}</p>
     {% for error in field.errors %}
         <p class="form-error">{{ error }}</p>
     {% endfor %}
+    {% endif %}
 {% endfor %}
 
 <p><input type="submit" value="{{ button_text }}"></p>

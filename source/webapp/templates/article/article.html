@@ -11,4 +11,12 @@
     <h1>{{ article.title }}</h1>
     <p>Created by <b>{{ article.author }}</b> at <b>{{ article.created_at }}</b></p>
     <div class="pre">{{ article.text }}</div>
+    <h1>Add Comment</h1>
+    <form method="POST" action="{% url 'comment_create_in_article' article.pk %}">
+        {% include 'partial/form.html' with button_text="Add" %}
+    </form>
+    <h2>Comments to this article</h2>
+    {% for comment in comments %}
+        {% include 'comment/comment.html' %}
+    {% endfor %}
 {% endblock %}
