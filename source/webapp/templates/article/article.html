@@ -10,7 +10,8 @@
 {% block content %}
     <h1>{{ article.title }}</h1>
     <p>Created by <b>{{ article.author }}</b> at <b>{{ article.created_at }}</b></p>
-    <div class="pre my-5">{{ article.text }}</div>
+    <div class="pre my-5"><p>{{ article.text }}</p>
+    <p>Category: {{ article.category|default_if_none:"Other" }}</p></div>
     <h1>Add Comment</h1>
     <form class="my-5" method="POST" action="{% url 'comment_create_in_article' article.pk %}">
         {% include 'partial/form.html' with button_text="Add" %}
