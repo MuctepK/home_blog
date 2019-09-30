@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from webapp.forms import ArticleForm
-from webapp.models import Article
+from webapp.models import Article, Comment
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -74,3 +74,12 @@ class ArticleDeleteView(View):
         article = get_object_or_404(Article, pk=kwargs['pk'])
         article.delete()
         return redirect('index')
+
+
+class CommentView(TemplateView):
+    template_name = 'comment_index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.all().order_by('-created_at')
+        return context
