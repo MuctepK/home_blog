@@ -98,7 +98,42 @@ class CommentCreateView(View):
                 text=form.cleaned_data['text'],
                 article=form.cleaned_data['article']
             )
-            # это нужно исправить на ваш url.
-            return redirect('article_view', pk=comment.article.pk)
+
+            return redirect('comment_index')
         else:
             return render(request, 'comment/create.html', context={'form': form})
+
+
+class CommentUpdateView(View):
+    def get(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=kwargs['pk'])
+        form = CommentForm(data={
+            'article': comment.article.pk,
+            'text': comment.text,
+            'author': comment.author
+        })
+        return render(request, 'comment/update.html', context={'form': form, 'comment': comment})
+
+    def post(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=kwargs['pk'])
+        form = CommentForm(data=request.POST)
+        if form.is_valid():
+            Comment.objects.create(
+                author=form.cleaned_data['author'],
+                text=form.cleaned_data['text'],
+                article=form.cleaned_data['article']
+            )
+            return redirect('comment_index')
+        else:
+            return render(request, 'comment/update.html', context={'form': form, 'comment': comment})
+
+
+class CommentDeleteView(View):
+    def get(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=kwargs['pk'])
+        return render(request, 'comment/delete.html', context={'comment': comment})
+
+    def post(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=kwargs['pk'])
+        comment.delete()
+        return redirect('comment_index')
