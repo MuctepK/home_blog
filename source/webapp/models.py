@@ -7,10 +7,18 @@ class Article(models.Model):
     author = models.CharField(max_length=40, null=False, blank=False, default='Unknown', verbose_name='Автор')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, blank=True, verbose_name='Категория',
+                                 related_name='articles')
 
     def __str__(self):
         return self.title
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=20, verbose_name='Название')
+
+    def __str__(self):
+        return self.name
 
 class Comment(models.Model):
     article = models.ForeignKey('webapp.Article', related_name='comments',
