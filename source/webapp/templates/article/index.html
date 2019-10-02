@@ -7,6 +7,9 @@
 
 {% block content %}
     <h1>Articles:</h1>
+    {% if is_paginated %}
+   {% include 'partial/pagination.html' %}
+    {% endif %}
     <hr/>
     {% for article in articles %}
         <div class="row my-5">

@@ -2,8 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from webapp.forms import CommentForm, CommentInArticleForm
 from webapp.models import Article, Comment
 from django.views import View
-from django.views.generic import TemplateView
-from .base_views import ListView
+from django.views.generic import TemplateView, ListView
 
 
 class CommentView(ListView):

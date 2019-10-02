@@ -2,17 +2,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from webapp.forms import ArticleForm, CommentInArticleForm
 from webapp.models import Article, Comment
 from django.views import View
-from django.views.generic import TemplateView
-from .base_views import ListView
+from django.views.generic import TemplateView, ListView
 
 
 class IndexView(ListView):
     template_name = 'article/index.html'
     model = Article
-    context_key = 'articles'
-
-    def get_objects(self):
-        return Article.objects.order_by('-created_at')
+    context_object_name = 'articles'
+    ordering = ['-created_at']
+    paginate_by = 4
+    paginate_orphans = 1
+    page_kwarg = 'page'
 
 class ArticleView(TemplateView):
     template_name = 'article/article.html'
