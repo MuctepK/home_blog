@@ -3,6 +3,7 @@
 {% block menu %}
     <li><a href="{% url 'article_add' %}">Add Article</a></li>
     <li><a href="{% url 'comment_index' %}">View comments</a></li>
+    <li class="mx-auto">{% include 'partial/search_form.html' %} </li>
 {% endblock %}
 
 {% block content %}

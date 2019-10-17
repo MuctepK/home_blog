@@ -1,0 +1,10 @@
+{% load widget_tweaks %}
+<form class="form-inline mr-auto" method="GET" action="">
+          <div class="md-form my-0">
+           {{search.search|add_class:'form-control'}}
+          </div>
+          <button  class="btn btn-primary search-btn" type="submit">Найти</button>
+     {% for error in search.search.errors %}
+        <p class="form-error">{{ error }}</p>
+    {% endfor %}
+ </form>
