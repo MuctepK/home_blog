@@ -19,5 +19,7 @@
     <h2 class="mt-5">Comments to this article</h2>
     {% for comment in comments %}
         {% include 'comment/comment.html' %}
+        {% empty %}
+        <h2 class="my-5"> There are no comments, yet.</h2>
     {% endfor %}
 {% endblock %}

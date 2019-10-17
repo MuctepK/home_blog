@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, ListView
 class CommentView(ListView):
     template_name = 'comment/index.html'
     model = Comment
-    context_key = 'comments'
+    context_object_name = 'comments'
 
 
 class CommentCreateView(View):
