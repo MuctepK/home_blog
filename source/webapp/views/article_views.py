@@ -1,10 +1,21 @@
+from django.db.models import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
-from django.utils.http import urlencode
-
 from webapp.forms import ArticleForm, CommentInArticleForm, SimpleSearchForm
-from webapp.models import Article, Comment
-from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
+from webapp.models import Article, Comment, Tag
+from django.views import View
+from django.views.generic import TemplateView, ListView
+
+
+def get_tags(tags):
+    result = []
+    for tag in tags.split(','):
+        clean_tag, _ = Tag.objects.get_or_create(name=tag)
+        result.append(clean_tag)
+    return result
+
+
+def get_str_tags(queryset):
+    return ','.join(([str(tag) for tag in queryset]))
 
 
 class IndexView(ListView):
@@ -16,64 +27,74 @@ class IndexView(ListView):
     paginate_orphans = 1
     page_kwarg = 'page'
 
-    def get(self, request, *args, **kwargs):
-        self.form = SimpleSearchForm(data=request.GET)
-        self.search_value = self.get_search_value()
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context['search'] = self.form
-        if self.search_value:
-            context['query'] = urlencode({'search': self.search_value})
-        return context
-
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset
-
-    def get_search_value(self):
-        if self.form.is_valid():
-            return self.form.cleaned_data['search']
-        return None
-
-
-
-
-class ArticleView(DetailView):
-    template_name = 'article/article.html'
-    model = Article
-    context_object_name = 'article'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        article = self.get_object()
-        context['article'] = article
-        context['form'] = CommentInArticleForm()
-        context['comments'] = Comment.objects.all().filter(article_id=article).order_by('-created_at')
+        context['search'] = SimpleSearchForm()
         return context
 
 
-class ArticleCreateView(CreateView):
-    model = Article
-    form_class = ArticleForm
-    template_name = 'article/create.html'
+class ArticleView(TemplateView):
+    template_name = 'article/article.html'
 
-    def get_success_url(self):
-        return reverse('article_view', kwargs={'pk': self.object.pk})
-
-
-class ArticleUpdateView(UpdateView):
-    form_class = ArticleForm
-    model = Article
-    template_name = 'article/update.html'
-
-    def get_success_url(self):
-        return reverse('article_view', kwargs={'pk': self.object.pk})
+    def get_context_data(self, **kwargs):
+        pk = kwargs.get('pk')
+        context = super().get_context_data(**kwargs)
+        context['article'] = get_object_or_404(Article, pk=pk)
+        context['form'] = CommentInArticleForm()
+        context['comments'] = Comment.objects.all().filter(article_id=pk).order_by('-created_at')
+        return context
 
 
-class ArticleDeleteView(DeleteView):
-    model = Article
-    template_name = 'article/delete.html'
-    success_url = reverse_lazy('index')
+class ArticleCreateView(View):
+    def get(self, request, *args, **kwargs):
+        form = ArticleForm()
+        return render(request, 'article/create.html', context={'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ArticleForm(data=request.POST)
+        if form.is_valid():
+            article = Article.objects.create(
+                title=form.cleaned_data['title'],
+                author=form.cleaned_data['author'],
+                text=form.cleaned_data['text'],
+            )
+            article.tags.set(get_tags(form.cleaned_data['tags']))
+            return redirect('article_view', pk=article.pk)
+        else:
+            return render(request, 'article/create.html', context={'form': form})
+
+
+class ArticleUpdateView(View):
+    def get(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, pk=kwargs['pk'])
+        form = ArticleForm(data={
+            'title': article.title,
+            'text': article.text,
+            'author': article.author,
+            'tags': get_str_tags(article.tags.all())
+        })
+        return render(request, 'article/update.html', context={'form': form, 'article': article})
+
+    def post(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, pk=kwargs['pk'])
+        form = ArticleForm(data=request.POST)
+        if form.is_valid():
+            article.title = form.cleaned_data['title']
+            article.text = form.cleaned_data['text']
+            article.author = form.cleaned_data['author']
+            article.tags.set(get_tags(form.cleaned_data['tags']))
+            article.save()
+            return redirect('article_view', pk=article.pk)
+        else:
+            return render(request, 'article/update.html', context={'form': form, 'article': article})
+
+
+class ArticleDeleteView(View):
+    def get(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, pk=kwargs['pk'])
+        return render(request, 'article/delete.html', context={'article': article})
+
+    def post(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, pk=kwargs['pk'])
+        article.delete()
+        return redirect('index')

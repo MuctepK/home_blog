@@ -3,7 +3,7 @@
 {% block menu %}
     <li><a href="{% url 'article_add' %}">Add Article</a></li>
     <li><a href="{% url 'comment_index' %}">View comments</a></li>
-    <li class="mx-auto">{% include 'partial/search_form.html' %} </li>
+    <li class="ml-5">{% include 'partial/search_form.html' %} </li>
 {% endblock %}
 
 {% block content %}
@@ -21,7 +21,14 @@
                 </div>
             </div>
         <div>{{ article.text }}</div>
-
+        <div class="row">
+        <p>Tags:  </p>
+        {% for tag in article.tags.all %}
+            <div class="mx-3">
+            {{ tag.name }}
+            </div>
+        {% endfor %}
+        </div>
         <hr/>
     {% endfor %}
     {% if is_paginated %}
