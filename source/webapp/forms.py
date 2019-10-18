@@ -12,6 +12,12 @@ class ArticleForm(forms.Form):
                                       empty_label=None)
     tags = forms.CharField(max_length=256, label='Tags', required=False)
 
+    def clean_tags(self):
+        for tag in self.cleaned_data['tags']:
+            if not tag.strip():
+                raise forms.ValidationError(message='Тег не может быть пустьм')
+        return self.cleaned_data['tags']
+
 
 class CommentForm(forms.Form):
     article = forms.ModelChoiceField(queryset=Article.objects.all(), required=True, label='Article',
