@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method='post' action="{% url 'article_search' %}">
+    {% include 'partial/form.html' with button_text='Search' %}
+    </form>
+    <h1>Results: </h1>
+    {% if articles %}
+    {% include 'article/partial/article_list.html' %}
+        {% else %}
+        <h2>Not Found</h2>
+    {% endif %}
+{% endblock %}
